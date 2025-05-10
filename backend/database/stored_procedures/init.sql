@@ -1,0 +1,25 @@
+-- init.sql: Create BuildBoard database and tables
+CREATE DATABASE BuildBoard;
+GO
+
+USE BuildBoard;
+GO
+
+CREATE TABLE Projects (
+	ProjectID INT PRIMARY KEY IDENTITY(1,1),
+	Title NVARCHAR(255) NOT NULL,
+	Niche NVARCHAR(100),
+	Description NVARCHAR(MAX),
+	Status NVARCHAR(50) DEFAULT 'Idea',
+	CreatedAt DATETIME DEFAULT GETDATE()
+);
+GO
+
+CREATE TABLE Logs (
+	LogID INT PRIMARY KEY IDENTITY(1,1),
+	ProjectID INT NOT NULL,
+	Entry NVARCHAR(MAX) NOT NULL,
+	CreatedAt DATETIME DEFAULT GETDATE(),
+	FOREIGN KEY (ProjectID) REFERENCES Projects(ProjectID)
+);
+GO

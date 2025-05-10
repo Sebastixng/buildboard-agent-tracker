@@ -1,3 +1,8 @@
+![MIT License](https://img.shields.io/badge/license-MIT-green)
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-ready-ff4b4b)
+
+
 # BuildBoard - A3H LLC Project Tracker
 
 BuildBoard is a modular, local-first project tracker designed for developers, startups, and builders to brainstorm, log, and summarize product development — powered by SQL Server, Streamlit, and optional GPT integration.

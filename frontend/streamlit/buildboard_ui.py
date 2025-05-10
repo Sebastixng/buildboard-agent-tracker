@@ -1,15 +1,13 @@
-# buildboard_ui.py - A3H LLC BuildBoard Streamlit App
+# buildboard_ui.py - A3H LLC BuildBoard Streamlit App (Cloud-Ready)
 
 import streamlit as st
 import pandas as pd
 import pyodbc
-import sys
 import os
 from datetime import datetime
 
-# Add backend utils path
-sys.path.append(os.path.abspath("../../backend/utils"))
-from db_writer import add_project, add_log_entry
+# ✅ Direct import (relative path works on Streamlit Cloud)
+from backend.utils.db_writer import add_project, add_log_entry
 
 # ─────────────────────────────────────────────────────────────
 # Database connection (for reads)
@@ -17,7 +15,7 @@ from db_writer import add_project, add_log_entry
 def get_connection():
     return pyodbc.connect(
         'DRIVER={ODBC Driver 17 for SQL Server};'
-        'SERVER=localhost;'
+        'SERVER=localhost;'  # May need updating for hosted SQL or public preview
         'DATABASE=BuildBoard;'
         'Trusted_Connection=yes;'
     )

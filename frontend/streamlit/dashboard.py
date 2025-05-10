@@ -1,27 +1,30 @@
-# dashboard.py - BuildBoard Project Dashboard (A3H LLC)
+# dashboard.py - A3H LLC BuildBoard Dashboard (Styled + GPT Summary)
 
 import streamlit as st
 import pandas as pd
 import pyodbc
-import sys
 import os
 import openai
 from dotenv import load_dotenv
+from PIL import Image
+
+from db_writer import add_log_entry, update_status
 
 # ─────────────────────────────────────────────────────────────
-# Load environment variables from .env
+# Load environment and logo
 # ─────────────────────────────────────────────────────────────
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# ─────────────────────────────────────────────────────────────
-# Add backend utils path and import DB functions
-# ─────────────────────────────────────────────────────────────
-sys.path.append(os.path.abspath("../../backend/utils"))
-from db_writer import add_log_entry, update_status
+logo_path = "frontend/streamlit/a3h_logo.png"
+if os.path.exists(logo_path):
+    logo = Image.open(logo_path)
+    st.image(logo, width=160)
+
+st.title("📊 BuildBoard Project Dashboard")
 
 # ─────────────────────────────────────────────────────────────
-# Database read connection
+# Database read access
 # ─────────────────────────────────────────────────────────────
 def get_connection():
     return pyodbc.connect(
@@ -49,7 +52,7 @@ def load_project_logs(project_id):
     return df
 
 def summarize_logs(logs_text):
-    prompt = f"""Summarize the following project progress notes for a product manager. Focus on what was built, what tools were used, and what decisions were made:\n\n{logs_text}"""
+    prompt = f"""Summarize the following project progress notes for a product manager. Highlight what was built, key tools, and decisions made:\n\n{logs_text}"""
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
@@ -58,14 +61,12 @@ def summarize_logs(logs_text):
     return response.choices[0].message["content"].strip()
 
 # ─────────────────────────────────────────────────────────────
-# Streamlit UI
+# UI
 # ─────────────────────────────────────────────────────────────
-st.set_page_config(page_title="BuildBoard Dashboard", layout="wide")
-st.title("📊 BuildBoard Project Dashboard")
 
 project_df = load_projects()
 statuses = ["All"] + sorted(project_df["Status"].unique())
-selected_status = st.selectbox("Filter by Status", statuses)
+selected_status = st.selectbox("🔎 Filter by Status", statuses)
 
 if selected_status != "All":
     project_df = project_df[project_df["Status"] == selected_status]
@@ -82,7 +83,7 @@ for row in logs_df.itertuples():
     st.markdown(f"**{row.CreatedAt.strftime('%Y-%m-%d %H:%M')}**  \n{row.Entry}")
     st.markdown("---")
 
-# ➕ Add new manual log entry
+# ➕ Manual log entry
 with st.expander("➕ Add New Log Entry"):
     log_note = st.text_area("Log Entry")
     if st.button("Add Log to Selected Project"):
@@ -92,7 +93,7 @@ with st.expander("➕ Add New Log Entry"):
         else:
             st.warning("Please enter a log note.")
 
-# 🧠 GPT-based log summarization
+# 🧠 GPT summary
 if st.button("🧠 Summarize Logs with GPT"):
     logs_text = "\n".join(
         f"{row.CreatedAt.strftime('%Y-%m-%d')}: {row.Entry}"

@@ -6,8 +6,8 @@ import pyodbc
 import os
 from datetime import datetime
 
-# ✅ Direct import (relative path works on Streamlit Cloud)
-from backend.utils.db_writer import add_project, add_log_entry
+# ✅ Updated import after moving db_writer.py into this folder
+from db_writer import add_project, add_log_entry
 
 # ─────────────────────────────────────────────────────────────
 # Database connection (for reads)
@@ -15,7 +15,7 @@ from backend.utils.db_writer import add_project, add_log_entry
 def get_connection():
     return pyodbc.connect(
         'DRIVER={ODBC Driver 17 for SQL Server};'
-        'SERVER=localhost;'  # May need updating for hosted SQL or public preview
+        'SERVER=localhost;'  # Change if using cloud or public SQL
         'DATABASE=BuildBoard;'
         'Trusted_Connection=yes;'
     )
